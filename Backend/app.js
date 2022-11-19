@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const booksRoutes = require("./routes/books");
+const userRoutes = require("./routes/");
 
 // Crearting the express app
 const app = express();
@@ -18,6 +19,8 @@ app.use((req, res, next) => {
 
 //defining routes
 app.use("/api/books", booksRoutes);
+app.use("/api/", userRoutes);
+
 
 //connecting to a DB
 mongoose.connect(process.env.MONGODB_URL).then(() => {
