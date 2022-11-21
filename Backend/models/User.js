@@ -12,30 +12,60 @@ const UserSchema = new Schema({
     password:{
         type: String,
         required: true, 
-    },
-})
-UserSchema.statics.signup = async function() {
-    //validatimg email and pwd 
-    if(!validator.isEmail(email)){
-        throw Error ("crentials mst be valid")
+    }, 
+}, {timestamps: true});
+
+    UserSchema.statics.signup = async function(email, password) {
+    
+        //Validating email and password
+        if(!validator.isEmail(email)){
+            throw Error("Credentials must be valid")
+        }
+    
+        if(!validator.isStrongPassword(password)){
+            throw Error("Credentials must be valid")
+        }
+    
+        const emailExists = await this.findOne({email});
+    
+        if(emailExists) {
+            throw Error("Email already exists!")
+        }
+    
+        //salt
+        const salt = await bcrypt.genSalt(12)
+        //hashed password
+        const hashedPassword = await bcrypt.hash(password, salt)
+    
+        const user = await this.create({email, password: hashedPassword})
+    
+        return user
     }
-
-/*     const user = await this.findOne({email});
-    if(!user){
-
-    } */
-
-    const emailExists = await this.findOne({email});
-    if (!emailExists){
-        throw Error ("Email does't exist")
-    }
-    //salt
-    const salt = await bcrypt.genSalt(12);
-    //hashed pwd
-    const hashedPassword = await bcrypt.hash(password, salt)
-
-    const user = await User.create({email, password: hashedPassword})
-    return user;
-}
-
-module.exports = mongoose.model('User', UserSchema);
+    
+    UserSchema.statics.login = async function(email, password) {
+    
+      //Validating email and password
+    
+      if(!email || !password) {
+        throw Error('You must provide your credentials to login!')
+      }
+    
+      if(!validator.isEmail(email)){
+          throw Error("Credentials must be valid")
+      }
+    
+      const user = await this.findOne({email});
+    
+      if(!user) {
+          throw Error("Email dosn't exist!")
+      }
+    
+      const correctPassword = await bcrypt.compare(password, user.password)
+      if(!correctPassword) {
+        throw Error('Incorrect Credentials')
+      }
+    
+      return user
+    } 
+    
+    module.exports = mongoose.model("User", UserSchema);

@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const booksRoutes = require("./routes/books");
-const userRoutes = require("./routes/");
+const userRoutes = require("./routes/User");
 
 // Crearting the express app
 const app = express();
