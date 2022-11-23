@@ -66,6 +66,6 @@ const UserSchema = new Schema({
       }
     
       return user
-    } 
+    }
     
     module.exports = mongoose.model("User", UserSchema);
