@@ -11,7 +11,7 @@ export default function Books({ books, setBooks }) {
     };
 
     fetchBooks();
-  }, []);
+  },);
 
   return (
     <div>
