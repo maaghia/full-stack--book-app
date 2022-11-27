@@ -1,52 +1,80 @@
-
+const { default: mongoose } = require("mongoose");
 const Book = require("../models/bookModel");
 
-//create a book 
+// Create a book
 const createBook = async (req, res) => {
-    const {title, author, price} = req.body;
+  const { title, author, price } = req.body;
 
-    //add to database
-    try {
-        const book = await Book.create({title, author, price});
-        res.status(201).json(book);
-    } catch (error) {
-        res.status(404).json({error: true, message: error.message});
-    }
+  //add to a database
+  try {
+    const book = await Book.create({ title, author, price });
+    res.status(201).json(book);
+  } catch (error) {
+    res.status(400).json({ error: true, message: error.message });
+  }  
 };
 
-//read all books
+// Read all books
 const getBooks = async (req, res) => {
-    const books = await Book.find({});
+  const books = await Book.find({});
 
-    res.status(200).json(books);
+  res.status(200).json(books);
 };
 
+//Read on book by it's ID
 const getBook = async (req, res) => {
-    
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
+
+  const book = await Book.findById(id);
+
+  if (!book) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
+
+  res.status(200).json(book);
 };
 
 const updateBook = async (req, res) => {
-    const {id} = rea.params;
+  const { id } = req.params;
 
-    if(!mongoose.Types.ObjectID.isValid(id)){
-        return res.status(404).json({error: "Book not found"});
-    }
-    res.status(200).json(book);
-}
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
+
+  const book = await Book.findByIdAndUpdate({ _id: id }, { ...req.body });
+
+  if (!book) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
+
+  res.status(200).json(book);
+};
 
 const deleteBook = async (req, res) => {
-    const {id} = rea.params;
+  const { id } = req.params;
 
-    if(!mongoose.Types.ObjectID.isValid(id)){
-        return res.status(404).json({error: "Book not found"});
-    }
-}
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
 
+  const book = await Book.findByIdAndDelete(id);
+
+  if (!book) {
+    return res.status(404).json({ error: "Book not found!" });
+  }
+
+  res.status(200).json(book);
+
+};
 
 module.exports = {
-    createBook,
-    getBooks,
-    getBook,
-    updateBook,
-    deleteBook, 
+  createBook,
+  getBooks,
+  getBook,
+  updateBook,
+  deleteBook,
 };
